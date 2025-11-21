@@ -1,31 +1,120 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Input;
+using ShopList.Gui.Models;
 
 namespace ShopList.Gui.ViewsModels
 {
-    public class ShopListViewModel
+    public class ShopListViewModel : INotifyPropertyChanged
     {
-        public ObservableCollecction<Item> Items { get;}
+        private string _nombreDelArticulo = string.Empty;
+        private int _CantidadAComprar = 1;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ObservableCollection<Item> Items { get; }
+
+        public string NombreDelArticulo
+        {
+            get => _nombreDelArticulo;
+            set
+            {
+                if (_nombreDelArticulo != value)
+                {
+                    _nombreDelArticulo = value;
+                    OnPropertyChanged(nameof(NombreDelArticulo));
+                }
+            }
+        }
+
+        public int CantidadAComprar
+        {
+            get => _CantidadAComprar;
+            set
+            {
+                if (_CantidadAComprar != value)
+                {
+                    _CantidadAComprar = value;
+                    OnPropertyChanged(nameof(CantidadAComprar));
+                }
+            }
+        }
+
+        public ICommand AgregarShopListItemCommand { 
+            get; private set; 
+        }
 
         public ShopListViewModel()
         {
-            Items = new ObservableColeccion<Item>();
+            Items = new ObservableCollection<Item>();
             CargarDatos();
+            AgregarShopListItemCommand = new Command(AgregarShoplistItem);
         }
+
+        private Random generador = new Random();
+
+        public void AgregarShoplistItem()
+        {
+            if (string.IsNullOrEmpty(_nombreDelArticulo) 
+                || CantidadAComprar <= 0)
+            {
+                return;
+            }
+
+            var item = new Item
+            {
+                Id = generador.Next(),
+                Nombre = NombreDelArticulo,
+                Cantidad = CantidadAComprar,
+                Comprado = false
+            };
+
+            Items.Add(item);
+            NombreDelArticulo = string.Empty;
+            CantidadAComprar = 1;
+
+        }
+
+        public void EliminarShopListItem()
+        {
+
+        }
+
 
         private void CargarDatos()
         {
             Items.Add(new Item()
             {
                 Id = 1,
-                nombre = "leche"
-                cantidad = 2,
+                Nombre = "Leche",
+                Cantidad = 2,
+                Comprado = false
+            });
 
-            }
+            Items.Add(new Item()
+            {
+                Id = 2,
+                Nombre = "Pan de caja",
+                Cantidad = 1,
+                Comprado = true
+            });
+
+            Items.Add(new Item()
+            {
+                Id = 3,
+                Nombre = "Jamón",
+                Cantidad = 500,
+                Comprado = false
+            });
+        }
+
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(
+                this, new PropertyChangedEventArgs(propertyName)
+            );
         }
     }
 }

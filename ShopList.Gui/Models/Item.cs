@@ -10,15 +10,15 @@ namespace ShopList.Gui.Models
     {
         public int Id { get; set; } 
 
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
-        public string Cantidad { get; set; }
+        public int Cantidad { get; set; }
 
-        public bool comprado { get; set; }
+        public bool Comprado { get; set; }
 
         public override string ToString()
         {
-            return $"{Nombre} ({Cantidad})" ;
+            return $"{this.Nombre} ({this.Cantidad}) " ;
         }
     }
 }
